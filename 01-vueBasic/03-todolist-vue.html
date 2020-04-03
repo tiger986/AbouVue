@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="../vue.js"></script>
+    <title>Document</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        #root{
+            width: 400px;
+            margin: 100px auto;
+        }
+        ul{
+            list-style: none;
+            margin-top: 30px;
+        }
+        ul li{
+            list-style: none;
+            margin-top: 5px;
+            cursor: pointer;
+        }
+        p{
+            width: 175px;
+            margin-top: 30px;
+            background-color: palegoldenrod;
+        }
+    </style>
+</head>
+<body>
+    <div id='root'>
+        <div>
+            <input type="text" v-model="keywords">
+            <input type="button" v-on:click="addItem" value="添加">
+        </div>
+        <ul>
+            <li v-for="(value, index) of list" v-on:click="delItem(index)">{{value}}</li>
+        </ul>
+        <p>{{keywords}}</p>
+    </div>
+</body>
+<script>
+    new Vue({
+        el: '#root',
+        data: {
+            list: ['item 0'],
+            keywords: ''
+        },
+        methods: {
+            addItem(){
+                this.list.push(this.keywords);
+                this.keywords = '';
+            },
+            delItem(index){
+                this.list.splice(index, 1);
+            }
+        }
+    })
+
+    //同样是实现相同的功能，与02中的相比，此处完全不操作DOM，只对数据进行操作
+
+    //指令：
+    //1. v-model='data'  数据双向绑定（用于表单元素）
+    //2. v-on:funType='funName'/v-on:funType='funName(arguments)' 给元素绑定事件
+    //3. v-for='val of list'/v-for='(val, index) of listArr' 循环渲染
+
+    //插值表达式：{{val}}
+
+    //知识点：
+    //1. 数据要定义在vue对象的deta对象中
+    //2. 事件要定义在vue对象的methods对象中
+    //3. 在事件使用某个数据时用this.dataName
+</script>
+</html>

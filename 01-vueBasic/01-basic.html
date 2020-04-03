@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="../vue.js"></script>
+    <title>Document</title>
+</head>
+<body>
+    <div id='root'>{{text}}</div>
+</body>
+<script>
+    // var root = document.querySelector('#root');
+    // root.innerHTML = 'vue的基础';
+
+    new Vue({
+        el: '#root',
+        data: {
+            text: 'vue的基础部分'
+        }
+    });
+
+    //以上两种方法达到了同样的效果，但第一个方法是通过操作DOM来做的，vue的方法只是修改数据，然后vue会自动渲染
+
+</script>
+</html>

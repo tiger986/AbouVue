@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="../jquery-1.10.1.min.js"></script>
+    <title>Document</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        #root{
+            width: 400px;
+            margin: 100px auto;
+        }
+        ul{
+            list-style: none;
+            margin-top: 30px;
+        }
+        ul li{
+            list-style: none;
+            margin-top: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div id='root'>
+        <div>
+            <input type="text" id='keywords'>
+            <input type="button" id="btn" value="添加">
+        </div>
+        <ul>
+            <li>item 0</li>
+        </ul>
+    </div>
+</body>
+<script>
+    $('#btn').on('click', () => {
+        let keywords = $('#keywords').val();
+        $('ul').append('<li>' + keywords + '</li>');
+        $('li').on('click', function(){  //点击删除
+            $(this).remove();
+        });
+        $('#keywords').val('');
+    })
+
+    //对比03-todolist-vue.html中使用vue的方法
+</script>
+</html>
