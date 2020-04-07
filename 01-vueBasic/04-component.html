@@ -49,7 +49,8 @@
         template: '<li v-on:click="clickItem(num)">{{item}}</li>' ,
         methods: {
             clickItem(num){
-                this.$emit('delete', num); //触发父组件上绑定的名为delete的事件，并将num传递过去作为delete事件的参数
+                console.log(this.num);
+                this.$emit('delete', num); //触发父组件上绑定的名为delete的事件，并将num传递过去作为delete事件的参数（子组件向父组件传递信息）
             }
         }
     })

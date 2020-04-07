@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="../vue.js"></script>
+</head>
+<body>
+    <div id="root">
+        <div>{{join}}</div>
+    </div>
+</body>
+
+<script>
+    //template模板
+    new Vue({
+        el: '#root',
+        data: {
+            msg: 'template模板'
+        },
+        computed: { //模板内的表达式非常便利，但是设计它们的初衷是用于简单运算的。在模板中放入太多的逻辑会让模板过重且难以维护，所以，对于复杂逻辑，vue 提倡使用计算属性
+            join: function(){ //不用调用，自动触发
+                var x = '，计算属性computed';
+                return this.msg + x;
+            }
+        }
+    });
+
+    /*理论上，computed 所有实现可以使用 methods 完全替换，但是计算属性是基于它们的响应式依赖进行缓存的。只在相关响应式依赖发生改变时它们才会重新求值。
+    这就意味着只要 message 还没有发生改变，多次访问 reversedMessage计算属性会立即返回之前的计算结果，而不必再次执行函数。而方法却会执行*/
+</script>
+</html>

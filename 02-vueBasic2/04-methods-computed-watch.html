@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="../vue.js"></script>
+</head>
+<body>
+    <div id="root">
+        <div @click="divClick1">{{firstName}}</div>
+        <div>{{divClick2()}}</div>
+        <div>{{fullName}}</div>
+    </div>
+</body>
+
+<script>
+    //template模板
+    new Vue({
+        el: '#root',
+        data: {
+            firstName: 'zhong',
+            lastName: 'guo'
+        },
+        methods: {
+            divClick1(){
+                this.firstName = 'zhong zhong';
+            },
+            divClick2(){
+                this.lastName = 'guo guo';
+                return  this.lastName;
+            }
+        },
+        computed: {
+            fullName(){
+                return this.firstName +' '+ this.lastName;
+            }
+        }
+    });
+
+    //methods和computed的区别
+    //1. methods中定义的函数如果写在插值表达式中要加()进行调用（要显示结果则函数要有return值）,computed中定义的函数如果写在插值表达式中不用进行调用，会自动触发（要显示结果则函数要有return值）
+    //2. 
+
+</script>
+</html>

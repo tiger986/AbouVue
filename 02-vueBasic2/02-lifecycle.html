@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="../vue.js"></script>
+</head>
+<body>
+    <div id="root">
+        <div v-on:click="divClick">{{msg}}</div>
+        <ul>
+            <li v-for="v in list">{{v}}</li>
+        </ul>
+    </div>
+</body>
+
+<script>
+    //vue 的生命周期钩子（生命周期函数）
+    const vm = new Vue({
+        //el: '#root',
+        data: {
+            msg: '生命周期函数',
+            list: [1, 2, 3, 4]
+        },
+        methods: {
+            divClick(){
+                this.msg = 'lifecycle of vue'
+            }
+        },
+        
+        //生命周期钩子
+        beforeCreate(){  //数据观测(data observer) 和 event/watcher 事件配置之前被调用
+            console.log('beforeCreate');
+            //console.log(this); //能拿到this，因为此时实例已经创建好了
+            //console.log(this.msg); //undefined 因为此时数据还没有初始化和注入
+            //这个时期，this变量还不能使用，在data下的数据，和methods下的方法，watcher中的事件都不能获得到；
+        },
+        created(){  //实例已经创建完成之后(已完成数据观测(data observer)，属性和方法的运算， watch/event 事件回调)被调用
+            console.log('created');
+            //console.log(this);
+            //console.log(this.msg); //能拿到数据了，此时数据已经初始化和注入了
+            //这个时候可以操作vue实例中的数据和各种方法，但是还不能对"dom"节点进行操作；
+        },
+        beforeMount(){  //在挂载开始之前被调用
+            console.log('beforeMount'); 
+        },
+        mounted(){  //挂载完成后(el 被新创建的 vm.$el 替换，并挂载到实例上去之后)被调用
+            console.log('mounted');
+            //挂载完毕，这时dom节点被渲染到文档内，一些需要dom的操作在此时才能正常进行
+        },
+        beforeUpdate(){  //有数据被修改前(数据的值真实的被修改，与以前的值不同)
+            console.log('beforeUpdate');
+            //有多少次数据修改则此钩子就会被触发多少次
+            //注意尽量不要在此进行数据修改，可能会造成死循环
+        },
+        updated(){ //数据被修改完成后(数据的值真实的被修改，与以前的值不同)
+            console.log('updated');
+            //有多少次数据修改则此钩子就会被触发多少次
+            //注意尽量不要在此进行数据修改，可能会造成死循环
+        },
+        beforeDestroy(){  //有组件被销毁前
+            console.log('beforeDestroy');
+        },
+        destroyed(){  //组件被销毁完成后
+            console.log('destroyed');
+        }
+
+    });
+
+    vm.$mount('#root'); //设置挂载点(与在实例中定义el:'#root'的功能一样)
+    //vm.$destroy(); //销毁组件(将watchers、child components、event listeners全部销毁)
+
+    //vue生命周期顺序（初始化期、生存期、销毁其）
+    //1. 创建实例: new Vue()
+    //2. init: 初始化  对自定义的函数(methods中的函数)和写出的生命周期函数进行绑定(没写的则不绑定)
+    //3. 自动触发生命周期函数beforeCreate() (如果没有绑定则不触发)
+    //4. init: 初始化  对定义的数据(data中的数据)进行初始化和注入）
+    //5. 自动触发生命周期函数created() (如果没有绑定则不触发)
+    //6. 判断实例中有没有定义el，如果有就往下进行，如果没有则会去执行实例的$mount()方法(没写则不会执行,注意要在实例的外面调用)
+    //7. 判断实例中有没有定义template，如果定义了则会将定义的template编译到render函数里，如果没有定义则将el中设置的那个html元素的结构当成template再编译到render函数里
+    //8. 自动触发生命周期函数beforeMount() (如果没有绑定则不触发)
+    //9. 创建vm.$el并将我们在实例中定义的el替换掉（相当于渲染DOM）
+    //10. 自动触发生命周期函数mounted() (如果没有绑定则不触发)
+    //11. 第一阶段完成，进入生存期
+    //12. 根据业务和操作准备对数据进行修改
+    //13. 自动触发生命周期函数beforeUpdate() (如果没有绑定则不触发，没有数据被修改也不会触发)
+    //14. 修改数据
+    //15. 自动触发生命周期函数updated() (如果没有绑定则不触发，没有数据被修改也不会触发)
+    //16. 根据业务和操作准备对组件进行销毁
+    //17. 自动触发生命周期函数beforeDestroy() (如果没有绑定则不触发，没有组件被销毁也不会触发)
+    //18. 销毁组件
+    //19. 自动触发生命周期函数destroyed() (如果没有绑定则不触发，没有组件被销毁也不会触发)
+
+</script>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="../vue.js"></script>
+</head>
+<body>
+    <div id="root">
+        <child v-bind:msg="message"></child>
+        <child v-bind:msg="'单项……'"></child>
+    </div>
+</body>
+
+<script>
+    //单向数据流：在子组件中只能读取父组件的信息，但不允许修改
+
+    Vue.component('child', {
+        props: ['msg'],
+        //在组件中定义data时要用一个函数将要定义的数据return一下，因为组件可能被多次使用，从而导致数据互相关联、互相干扰，用一个函数return一下就可以避免了
+        //根组件定义data时不需要，因为根组件只有一个
+        data: function(){ 
+           return{
+                childMsg: this.msg //拷贝父组件的数据
+           }
+        },
+        template: '<div v-on:click="divClick">{{childMsg}}</div>',
+        methods: {
+            divClick(){
+                console.log(this.msg);
+                //this.msg = '单项数据流1111'; //会报错，在子组件中只能读取父组件的信息，不允许修改，改变即违背了单向数据流的原则
+                this.childMsg = '单项数据流1111'; //可以在子组件中对父组件的信息进行拷贝，然后对拷贝来的数据进行修改
+            }
+        }
+    });
+
+    const vm = new Vue({
+        el: '#root',
+        data: {
+            message: '单项数据流'
+        }
+    });
+</script>
+</html>
