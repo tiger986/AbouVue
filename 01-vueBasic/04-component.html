@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="../vue.js"></script>
+    <title>Document</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        #root{
+            width: 400px;
+            margin: 100px auto;
+        }
+        ul{
+            list-style: none;
+            margin-top: 30px;
+        }
+        ul li{
+            list-style: none;
+            margin-top: 5px;
+            cursor: pointer;
+        }
+        p{
+            width: 175px;
+            margin-top: 30px;
+            background-color: palegoldenrod;
+        }
+    </style>
+</head>
+<body>
+    <div id='root'>
+        <div>
+            <input type="text" v-model="keywords">
+            <input type="button" v-on:click="addItem" value="添加">
+        </div>
+        <ul>
+            <todo-list v-for="(value, index) of list" v-bind:key="index" v-bind:item='value' v-bind:num='index' v-on:delete='delItem'></todo-list>
+        </ul>
+        <p>{{keywords}}</p>
+    </div>
+</body>
+<script>
+    Vue.component('TodoList', { //全局定义组件
+        props: ['item', 'num'],
+        template: '<li v-on:click="clickItem(num)">{{item}}</li>' ,
+        methods: {
+            clickItem(num){
+                this.$emit('delete', num); //触发父组件上绑定的名为delete的事件，并将num传递过去作为delete事件的参数
+            }
+        }
+    })
+
+    new Vue({
+        el: '#root',
+        data: {
+            list: ['item 0'],
+            keywords: ''
+        },
+        methods: {
+            addItem(){
+                this.list.push(this.keywords);
+                this.keywords = '';
+            },
+            delItem(num){
+                this.list.splice(num, 1);
+            }
+        }
+    })
+
+    //组件命名：
+    //1. TodoList ==> <todo-list></todo-list> （大驼峰）首选用法
+    //2. list ==> <list></list> 
+    //3. todoList ==> <todo-list></todo-list>  (小驼峰)
+
+    //v-bind:name='val' 为元素设置一个属性并绑定一个变量作为属性值（如果属性值不是一个变量，就和给元素添加一个属性一样：name='val'）
+
+    //props: ['name1', 'name2', ……] 其中的name1、name2等都是父组件的元素属性，子组件可以通过props访问这些属性（父组件向子组件传递信息）
+
+    //当循环组件或元素时，要为其设置一个key属性，而且循环出来的每个组件或元素的key的属性值必须是惟一的
+
+    //v-on:delete='delItem' 为组件或元素绑定一个名为delete的事件，等于定义在methods中的名为delItem事件
+
+    //注意：
+    
+
+
+
+</script>
+</html>
