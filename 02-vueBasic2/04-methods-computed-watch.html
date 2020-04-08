@@ -12,6 +12,8 @@
         <div @click="divClick1">{{firstName}}</div>
         <div>{{divClick2()}}</div>
         <div>{{fullName}}</div>
+        <div @click="changeFlag">{{flag}}</div>
+        <div>{{six | getSix}}</div>
     </div>
 </body>
 
@@ -21,27 +23,54 @@
         el: '#root',
         data: {
             firstName: 'zhong',
-            lastName: 'guo'
+            lastName: 'guo',
+            flag: 'hao',
+            six: 1
         },
         methods: {
             divClick1(){
                 this.firstName = 'zhong zhong';
+                console.log('divClick1')
             },
             divClick2(){
                 this.lastName = 'guo guo';
+                console.log('divClick2')
                 return  this.lastName;
+            },
+            changeFlag(){
+                this.flag = 'hao hao';
+                this.six = 2;
             }
         },
-        computed: {
-            fullName(){
+        computed: { //计算属性
+            fullName: function(){
+                console.log('fullName')
                 return this.firstName +' '+ this.lastName;
+            }
+        },
+        watch: { //监听(当被监听的变量的值发生改变时去做一些操作)
+            flag(){ //监听flag变量
+                this.firstName = 'flag的值发生改变了';
+            }
+        },
+        filters: { //过滤器  用于格式化一些数据
+            getSix(val){
+                if(val === 1){
+                    return '男';
+                }else if(val === 2){
+                    return '女';
+                }else{
+                    return '其他';
+                }
             }
         }
     });
 
-    //methods和computed的区别
+
     //1. methods中定义的函数如果写在插值表达式中要加()进行调用（要显示结果则函数要有return值）,computed中定义的函数如果写在插值表达式中不用进行调用，会自动触发（要显示结果则函数要有return值）
-    //2. 
+    //2. computed中的方法是基于依赖(方法中引用的变量)进行缓存的，只要方法中引用的变量没有发生改变则该方法就不会被执行(即使手动调用也只是将之前的结果从缓存中取出来而已，与dom是不是被从新渲染也无关)，反过来，如果方法中引用的变量有发生改变则会自动触发该方法
+    //3. 要注意当任意一个已经被绑定在模板中的值发生改变时，divClick2都会被触发，因为值发生改变，dom会被重新渲染，那<div>{{divClick2()}}</div>中的divClick2就会被触发,这与fullName的触发条件是不一样的
+
 
 </script>
 </html>

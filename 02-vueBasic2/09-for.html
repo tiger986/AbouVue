@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="../vue.js"></script>
+    <title>Document</title>
+</head>
+<body>
+    <div id="root">
+        <ul>
+            <li v-for="(v, i) of list">{{i}}-{{v}}</li>
+        </ul>
+        <button @click="changeArr">修改</button>
+        <ul>
+            <li v-for="(v, i) of list2">{{i}}-{{v}}</li>
+        </ul>
+        <button @click="changeObj">修改</button>
+        <div v-for="(v, i) of list3">
+            <p v-for="(vv, ii) of v">{{i}}.{{ii}}-{{vv}}</p>
+        </div>
+    </div>
+</body>
+<script>
+    new Vue({
+        el: '#root',
+        data: {
+            list: ['a', 'b', 'c'],
+            list2: {
+                a: 'aa',
+                b: 'bb',
+                c: 'cc'
+            },
+            list3: [['r', 's', 't'], ['u', 'v', 'w'], ['x', 'y', 'z']]
+        },
+        methods: {
+            changeArr(){
+                //this.list.length = 0; //无效，不会重新渲染dom
+                //this.list = []; //有效
+                //this.list.splice(0, this.list.length); //有效
+                //this.list[1] = 'ddd'; //无效，不会重新渲染dom
+                this.list.splice(0, 1, 'ddd'); //有效
+                this.$set(this.list, 1, 'ddd') //vue提供的修改数组和对象的方法,在vue实例上的方法
+                Vue.set(this.list, 2, 'ddd'); //vue提供的修改数组和对象的方法,在Vue全局对象上的方法
+            },
+            changeObj(){
+                //this.list2.a = 'aaa';
+                //this.list2['a'] = 'aaa'; //与上一个方法等同
+                var obj = this.list2;
+                obj.a = 'eee'; //原对象list2也会被修改，dom会被重新渲染
+                this.$set(this.list2, 'b', 'eee') //vue提供的修改数组和对象的方法,在vue实例上的方法
+                Vue.set(this.list2, 'c', 'eee'); //vue提供的修改数组和对象的方法,在Vue全局对象上的方法
+            }
+        }
+    });
+
+    //1. v-for 循环一个数组时，value是数组中的元素，index是元素的索引；循环一个对象时，value是对象中的属性值，index是对象中的属性。
+    //2. 不能通过设置数组的length等于0来清空数组，从而来重新渲染dom，也不能通过下标修改数组，从而来重新渲染dom，这两种方法对于重新渲染dom是无效的，这是监控数组的特点
+    //3. 修改数组重新渲染dom有效的方法：push()、pop()、shift()、unshift()、splice()、sort()、reverse()、 this.$set()、Vue.set()
+</script>
+</html>

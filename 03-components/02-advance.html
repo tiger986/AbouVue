@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="../vue.js"></script>
+    <title>Document</title>
+    <style>
+        .col{
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div id="root">
+        <use-child :num='text' :class='font'></use-child>
+        <table border="1">
+            <tbody>
+                <template> <!-- 当这种嵌套型的html元素中的子元素被定义成组件使用时，要放在<template></template>标签中，否则会报错 -->
+                    <tr-child></tr-child>
+                </template>
+            </tbody>
+        </table>
+    </div>
+</body>
+
+<script>
+    //局部组件（使用时要在实例中申明）
+    const LocalChild = {
+        props: ['num'], //定义的属性如果不通过props传到子组件中，则该属性会被添加成子组件template中最外层元素上的一个元素属性，class属性没有写在props中，那编译后就会变成<div class='col'>vue的局部组件-a</div>
+        template: '<div>{{msg}}-{{num}}</div>',
+        data: function(){  //注意此处data的写法，与在实例中的写法不同
+            return {
+                msg: 'vue的局部组件'
+            }
+        }
+    };
+
+    const TrChild = {
+        template: '<tr><td>abc</td><td>def</td></tr>'
+    }
+    //为什么嵌套型的html元素中的子元素被定义成组件使用时，要放在<template></template>标签中：
+    /*在beforeMount钩子中我们可以知道此时子组件的template模板已经被渲染到页面上了，但template模板还没有被解析，
+      所以还不是真正的dom(在mounted钩子触发的时候就被解析成真正的dom了)，
+      这时浏览器在解析这种嵌套型元素时就会报错,因为这种嵌套型元素是有编程规则的，如tbody元素中就应该是tr、
+      select元素中就应该是option，所以要想浏览器不报错，那就要用vue提供给我们的方法，把主要的子组件放到template></template>标签中*/
+
+    const vm = new Vue({
+        el: '#root',
+        components: { //申明使用局部组件
+            UseChild: LocalChild,
+            TrChild, //使用子组件时的名字和子组件定义的名字相同，可以这么写
+        },
+        data: {
+            text: 'a',
+            font: 'col'
+        },
+        beforeMount(){
+            //var root = document.getElementById('root');
+            //console.log(root.innerHTML);
+        },
+        mounted(){
+            //var root = document.getElementById('root');
+            //console.log(root.innerHTML);
+        }
+    });
+</script>
+</html>

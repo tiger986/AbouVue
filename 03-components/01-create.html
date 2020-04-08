@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="../vue.js"></script>
+    <title>Document</title>
+</head>
+<body>
+    <div id="root">
+        <global-child num='1'></global-child>
+        <use-child num='a'></use-child>
+    </div>
+    <div id="root2">
+        <global-child num='2'></global-child>
+        <use-child num='b'></use-child>
+    </div>
+</body>
+
+<script>
+    //全局组件（在任何实例中都可以使用,不需要在实例中申明）
+    Vue.component('GlobalChild', {
+        props: ['num'],
+        template: '<div>{{msg}}-{{num}}</div>',
+        data: function(){  //注意此处data的写法，与在实例中的写法不同
+            return {
+                msg: 'vue的全局组件'
+            }
+        }
+    });
+
+    //局部组件（使用时要在实例中申明）
+    const LocalChild = {
+        props: ['num'],
+        template: '<div>{{msg}}-{{num}}</div>',
+        data: function(){  //注意此处data的写法，与在实例中的写法不同
+            return {
+                msg: 'vue的局部组件'
+            }
+        }
+    };
+
+    const vm = new Vue({
+        el: '#root',
+        components: { //申明使用局部组件
+            UseChild: LocalChild
+        }
+    });
+    const vm2 = new Vue({
+        el: '#root2',
+        components: { //申明使用局部组件
+            UseChild: LocalChild
+        }
+    });
+</script>
+</html>

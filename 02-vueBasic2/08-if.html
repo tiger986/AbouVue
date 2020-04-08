@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="../vue.js"></script>
+    <title>Document</title>
+</head>
+<body>
+    <div id="root">
+        <div v-if="flag">条件判断</div>
+        <button @click="changeFlag">flag</button>
+
+        <div v-if="flag2">条件判断2.1</div>
+        <div v-else>条件判断2.2</div>
+        <button @click="changeFlag2">flag2</button>
+
+        <div v-if="flag3 >= 90">条件判断3.1</div>
+        <div v-else-if="60 <= flag3 && flag3 < 90">条件判断3.2</div> <!-- 注意这里的条件不能写成60<=flag3<90 ,v-if-else是在2.4版本才新增的-->
+        <div v-else>条件判断3.3</div>
+        <button @click="changeFlag3(95)">95</button>
+        <button @click="changeFlag3(70)">70</button>
+        <button @click="changeFlag3(50)">50</button>
+
+        <div v-show="flag4">条件判断4</div>
+        <button @click="changeFlag4">flag4</button>
+        
+    </div>
+</body>
+
+<script>
+    //注意：v-if和v-else一起用时，中间不能被其他元素隔开，v-if和v-else-if和v-else一起用时也不能被隔断
+    //v-if是添加或移除元素，v-show是在元素上设置display属性
+    //v-if是真正的条件渲染，它会确保在切换过程中条件块内的事件监听和子组件适当的销毁和重建
+    //v-if是惰性的，当条件被设置和前一个值相同时(赋值了但赋的值和前一个值一样)，就什么也不做（不会被重建），v-show则不管赋值是否相同，元素总是被渲染，并且只是简单的基于css进行切换
+    //两者相比，v-if有更高的切换开销，v-show有更高的初始渲染开销。因此如果需要频繁的切换，则用v-show较好，如果运行时条件很少改变，则用v-if较好
+
+    new Vue({
+        el: '#root',
+        data: {
+            flag: true,
+            flag2: true,
+            flag3: 95,
+            flag4: true
+        },
+        methods: {
+            changeFlag(){
+                this.flag = !this.flag;
+            },
+            changeFlag2(){
+                this.flag2 = !this.flag2;
+            },
+            changeFlag3(val){
+                this.flag3 = val;
+            },
+            changeFlag4(){
+                this.flag4 = !this.flag4;
+            }
+        }
+    });
+</script>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="../vue.js"></script>
+</head>
+<body>
+    <div id="root">
+        <div @click="change">{{text}}</div>
+    </div>
+</body>
+
+<script>
+    //计算属性中的get和set方法
+    new Vue({
+        el: '#root',
+        data: {
+            t1: 'zhong',
+            t2: ' guo',
+        },
+        methods: {
+            change(){
+                this.text = 'da zhong guo';
+            }
+        },
+        computed: {
+            text: {
+                get(){ //当引用的变量发生改变时触发
+                    return this.t1 + this.t2;
+                },
+                set(newVal){ //当text的值发生改变时触发
+                    var arr = newVal.split(' ');
+                    this.t1 = arr[0];
+                    this.t2 = arr[1] + arr[2];
+                }
+            }
+        }
+
+    });
+</script>
+</html>
