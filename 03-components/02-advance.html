@@ -15,6 +15,7 @@
 <body>
     <div id="root">
         <use-child :num='text' :class='font'></use-child>
+
         <table border="1">
             <tbody>
                 <template> <!-- 当这种嵌套型的html元素中的子元素被定义成组件使用时，要放在<template></template>标签中，否则会报错 -->
@@ -22,6 +23,12 @@
                 </template>
             </tbody>
         </table>
+
+        <input type="text" ref="iptDom" value="请输入…" />
+        <button @click="getFocus">修改value</button>
+        
+        <div-child ref="childDom"></div-child>
+        <button @click="setChild">修改</button>
     </div>
 </body>
 
@@ -45,16 +52,43 @@
       所以还不是真正的dom(在mounted钩子触发的时候就被解析成真正的dom了)，
       这时浏览器在解析这种嵌套型元素时就会报错,因为这种嵌套型元素是有编程规则的，如tbody元素中就应该是tr、
       select元素中就应该是option，所以要想浏览器不报错，那就要用vue提供给我们的方法，把主要的子组件放到template></template>标签中*/
+    
+    const DivChild = {
+        template: '<div>{{name}}-{{title}}</div>',
+        data: function(){
+            return {
+                name: 'zhangsan',
+                title: 'teacher'
+            }
+        },
+        methods: {
+            setTitle(){
+                this.title = 'student';
+            }
+        }
+    }
 
     const vm = new Vue({
         el: '#root',
         components: { //申明使用局部组件
             UseChild: LocalChild,
             TrChild, //使用子组件时的名字和子组件定义的名字相同，可以这么写
+            DivChild
         },
         data: {
             text: 'a',
             font: 'col'
+        },
+        methods: {
+            getFocus(){
+                //在元素上添加ref属性，然后可以在实例的$refs对象中拿到该元素的dom节点，这样就可以做一些dom操作(这是vue给我们提供的操作dom的方法)
+                this.$refs.iptDom.setAttribute('value', 'aaa'); 
+            },
+            setChild(){
+                //在子组件上添加ref属性，然后可以在实例的$refs对象中拿到该子组件对象(相当于该子组件的this)，这样就可以在父组件中对其子组件的数据直接进行修改或直接调用子组件的方法(不提倡这样做，破坏了单向数据流的概念)
+                this.$refs.childDom.name = 'lisi';
+                this.$refs.childDom.setTitle();
+            }
         },
         beforeMount(){
             //var root = document.getElementById('root');
@@ -63,6 +97,7 @@
         mounted(){
             //var root = document.getElementById('root');
             //console.log(root.innerHTML);
+            this.$refs.iptDom.setAttribute('autofocus', true);
         }
     });
 </script>

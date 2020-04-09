@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="../vue.js"></script>
+    <title>Document</title>
+</head>
+<body>
+    <div id="root">
+        <first-child :title="name"></first-child>
+
+        <div>{{age}}</div>
+        <second-child @setage="parentClick"></second-child>
+        <!--这里的setage不能用驼峰写法，即使写了处理程序也会将其注册为“setage”，HTML属性不区分大小写，在DOM模板中使用时不能使用v-on和v-bind:来监听camelCase(驼峰)事件-->
+
+        <third-child></third-child>
+        <four-child></four-child>
+
+        <five-child></five-child>
+        <six-child></six-child>
+    </div>
+</body>
+
+<script>
+    //1.父组件向子组件传递数据（通过在父组件上添加属性，再通过子组件的props传递）
+    const FirstChild = {
+        props: ['title'],
+        template: '<div>{{title}}</div>',
+    };
+
+    //2.子组件向父组件传递数据(通过子组件的$emit方法去触发定义在父组件上的某个事件，并将子组件中的数据通过参数传递到父组件的事件中去)
+    const SecondChild = {
+        template: '<div><button @click="childClick">修改</button></div>',
+        data: function(){
+            return {
+                number: 100
+            }
+        },
+        methods: {
+            childClick(){
+                this.$emit('setage', this.number);
+            }
+        }
+    };
+
+    //3.在子组件上添加ref属性，然后在父组件中通过this.$refs直接访问和操作子组件中的数据，看02-advance.html
+
+    //4.bus总线定义全局状态(可以实现任意两个或多个组件之间的数据传递)
+    Vue.prototype.quanJu = { //可以在任何实例中(子组件也是一个实例)通过this.quanJu访问和操作bus对象中的数据(所有实例共享quanJu中的数据)
+        wenBen: '全局数据'
+    };
+    const ThirdChild = {
+        template: '<div>{{quanJu.wenBen}}-{{text}}</div>',
+        data: function(){
+            return {
+                text: this.quanJu.wenBen + 'aa'
+            }
+        }
+    };
+    const FourChild = {
+        template: '<div><button @click="childClick">修改</button></div>',
+        methods: {
+            childClick(){
+                this.quanJu.wenBen = '在此修改全局数据';
+                alert(this.quanJu.wenBen);
+            }
+        }
+    };
+
+    //5.创建一个实例，通过$emit(发送信息)和$on(接收信息)进行任意组件的数据传递
+    const comp = new Vue();
+    const FiveChild = {
+        template: '<div>{{text}}</div>',
+        data: function(){
+            return {
+                text: 'aaaa'
+            }
+        },
+        beforeCreate(){
+            comp.$on('setText', function(str){ //这里可以用箭头函数，箭头函数的this会向上延伸
+                this.text = str;
+            }.bind(this));
+        }
+    };
+    const SixChild = {
+        template: '<div><button @click="childClick">修改</button></div>',
+        methods: {
+            childClick(){
+                comp.$emit('setText', 'bbbb');
+            }
+        }
+    };
+
+
+    new Vue({
+        el: '#root',
+        components: {
+            FirstChild,
+            SecondChild,
+            ThirdChild,
+            FourChild,
+            FiveChild,
+            SixChild
+        },
+        data: {
+            name: 'zhangsan',
+            age: 20
+        },
+        methods: {
+            parentClick(num){
+                this.age = num;
+            }
+        }
+    });
+</script>
+</html>
