@@ -82,6 +82,7 @@
             comp.$on('setText', function(str){ //这里可以用箭头函数，箭头函数的this会向上延伸
                 this.text = str;
             }.bind(this));
+            //comp.$off('setText'); //解除绑定
         }
     };
     const SixChild = {

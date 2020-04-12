@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="../vue.js"></script>
+</head>
+<body>
+   <div id="root">
+        <div>{{msg}}</div>
+
+        <component :is="comp"></component> <!--固定写法，根据变量copm的值决定使用哪个组件-->
+        <button @click="setComp">更换组件</button>
+
+        <component v-once="true" :is="comp2"></component> <!--v-once默认值是false，若为true则该组件值允许加载一次，不能再做切换-->
+        <button @click="setComp2">更换组件</button>
+
+        <keep-alive>
+            <component :is="comp2"></component> <!--keep-alive标签，当父组件被切换了，然后再切换回来的时候，这里的component还保持在切换父组件之前加载的那个子组件上-->
+        </keep-alive>  
+        <button @click="setComp2">更换组件</button>    
+   </div> 
+</body>
+
+<script>
+    //1.动态使用组件 
+    const FirstChild = {
+        template: '<div>child1</div>'
+    };
+    const SecondChild = {
+        template: '<div>child2</div>'
+    };
+
+    const vm = new Vue({
+        data: {
+            msg: 'aaa',
+            comp: 'FirstChild',
+            comp2: 'FirstChild',
+        },
+        components: {
+            FirstChild,
+            SecondChild
+        },
+        methods: {
+            setComp(){
+                if(this.comp == 'FirstChild'){
+                    this.comp = 'SecondChild';
+                }else{
+                    this.comp = 'FirstChild';
+                }  
+            },
+            setComp2(){
+                this.comp2 = this.comp2 == 'FirstChild' ? 'SecondChild' : 'FirstChild';
+            }
+        }
+    });
+    vm.$mount("#root");
+</script>
+</html>

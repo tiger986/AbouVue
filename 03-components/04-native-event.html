@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="../vue.js"></script>
+    <title>Document</title>
+</head>
+<body>
+    <div id="root">
+        <first-child :text="text" @click.native="setText"></first-child> <!--在组件标签上添加事件，要加上.native修饰符，否则无效-->
+        <a href="https://www.baidu.com" target="_blank" @click.prevent="noJump">百度</a> <!--.prevent禁止了a标签的默认事件，点击就不会跳转了-->
+    </div>
+</body>
+
+<script>
+    //vue有很多不同作用的修饰符
+    //1.native修饰符的作用是将组件标签作为html原生标签来进行事件绑定
+    //2.prevent修饰符的作用是禁止标签的默认事件
+
+    const FirstChild = {
+        props: ['text'],
+        template: '<div>{{text}}</div>'
+    };
+    new Vue({
+        el: '#root',
+        components: {
+            FirstChild
+        },
+        data: {
+            text: 'aaa'
+        },
+        methods: {
+            setText(){
+                this.text = 'bbb';
+            },
+            noJump(){
+                this.text ="ccc";
+            }
+        }
+    });
+</script>
+</html>

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="../vue.js"></script>
+</head>
+<body>
+    <div id="root">
+        <first-child :list="list"></first-child>
+
+        <second-child :msg="text">
+            {{text}}-ddd
+            <p>ccc</p>
+        </second-child>
+        
+        <third-child :name="name"></third-child>
+
+        <four-child :classes="classes">
+            <p slot="one">一年一班</p>
+            <p slot="two">一年二班</p>
+            <p slot="three">一年三班</p>
+            <p>一年四班</p>
+        </four-child>
+
+        <five-child>
+            <ul>
+                <li v-for="val of list2">{{val}}</li>
+            </ul>
+        </five-child>
+
+        <six-child>
+            <template slot-scope="scope"> <!--scope是添加在子组件中插槽上的所有属性的合集(固定写法,template标签加slot-scope="scope")-->
+                <div>
+                    {{scope.text}}-{{scope.str}}
+                </div>
+            </template>
+        </six-child>
+
+        <seven-child>
+            <list slot-scope="scope" :list="scope.list"></list>
+        </seven-child>
+        <eight-child>
+            <list slot-scope="scope" :list="scope.list"></list>
+        </eight-child>
+    </div>
+</body>
+
+<script>
+    //1.v-text、v-html
+    const FirstChild = {
+        props: ['list'],
+        //template: '<div>{{list}}</div>'
+        //template: '<div v-text="list"></div>' //与上面一个的效果一样，只会将list当做文本显示
+        template: '<div v-html="list"></div>' //会将list当做html结构解析并显示（如果list是文本也可正常显示）
+    };
+
+    //2.<slot></slot> 插槽（简单理解就是组件内部留一个或多个的插槽位置，可供组件传对应的模板代码进去）
+    const SecondChild = {
+        props: ['msg'],
+        template: '<div><slot></slot>{{msg}}</div>' //在组件标签中间写的内容会全部被放在这里的插槽中(有几个插槽就重复放入几次)，然后在页面上显示出来
+    };
+
+    //3.插槽默认值
+    const ThirdChild = {
+        props: ['name'],
+        template: '<div>{{name}}-<slot>男</slot></div>' //插槽中可以设置默认值，当组件标签内没有给插槽内容时就显示写在插槽里的默认值，当组件标签内给了内容时，就显示所给内容
+    };
+
+    //4.具名插槽
+    const FourChild = {
+        props: ['classes'],
+        template: '<div>{{classes}}<slot name="one"></slot><slot name="two"></slot><slot></slot></div>' //想显示哪个就在这里写哪个,这里不加name属性的solt只显示组件标签中没有加slot属性的全部内容
+    };
+
+    //5.将父组件的list2循环出来，通过插槽放到子组件中去显示
+    const FiveChild = {
+        template: '<div><p>循环list</p><slot></slot></div>' 
+    };
+
+    //6.将子组件中的数据通过slot标签的属性传递到父组件标签中使用,2.5版本之前slot-scope="scope"必须写在template标签上，2.5版本后则不需要，可以写在任意标签上
+    const SixChild = {
+        template: '<div><slot :text="text" str="abc"></slot></div>',
+        data: function(){
+            return {
+                text: 'child text'
+            }
+        }
+    };
+
+    //7.做一个列表组件，使其根据不同的父组件显示不同的内容，通过slot-scope="scope"来实现
+    const list = {
+        props: ['list'],
+        template: '<ul><li v-for="v of list">{{v}}</li></ul>',
+    };
+    const SevenChild = {
+        template: '<div><slot :list="list"></slot></div>',
+        data: function(){
+            return {
+                list: ['aaa', 'bbb', 'ccc']
+            }
+        }
+    };
+    const EightChild = {
+        template: '<div><slot :list="list"></slot></div>',
+        data: function(){
+            return {
+                list: [111, 222, 333]
+            }
+        }
+    };
+
+    new Vue({
+        el: '#root',
+        components: {
+            FirstChild,
+            SecondChild,
+            ThirdChild,
+            FourChild,
+            FiveChild,
+            SixChild,
+            list,
+            SevenChild,
+            EightChild
+        },
+        data: {
+            text: 'aaa',
+            list: '<ul><li>a</li><li>b</li><li>c</li></ul>',
+            list2: [1, 2, 3],
+            name: 'zhangsan',
+            classes: '班级'
+        }
+    });
+</script>
+</html>

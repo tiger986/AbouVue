@@ -1,0 +1,34 @@
+一、步骤：
+1. 安装脚手架vue-cli: npm install @vue/cli 或者 yarn global add @vue/cli
+2. 在项目文件夹中创建项目: vue init webpack 或 vue init 项目名 或 vue create 项目名  (vue --help 查看vue命令)
+3. 创建项目过程中会让选择一些选项: 环境要选择Runtime + Compiler: recommended for most users、工具选择npm或yarn都可以
+4. 启动项目试试: yarn start (会启动一个服务，可在浏览器浏览开发的项目)
+5. build一下试试: yarn run build （会build出一个dist文件夹，此文件夹就是开发完成后部署到服务器上的项目）
+6. src/main.js与根目录下的index.html文件相对应,main.js中首先要import Vue from 'vue'，后面要用什么就再引入什么,main.js中的new Vue()是定义了项目的根组件
+7. 路由(/router/index.js)：a.引入vue、b.引入vue-router、c.引入各个单文件组件、 d.Vue.use一下引进来的vue-router、 
+   e.new一下引进来的vue-router并配置routes、 f.export default一下new出来的vue-router的实例、 g.在用路由的地方引入并使用、
+   h.在页面上相应的地方写上<router-view></router-view>标签(称为插座)、 i.点击进行路由跳转的标签为<router-link to=""></router-link>
+   注意：在根组件里注入router后，在任何组件里都可以使用router-view标签和router-link标签
+
+安装（vue-cli3.0）：
+1. 如果您在vue-cli全局安装了以前的(1.x或2.0)软件包，则需要先将其卸载：npm uninstall vue-cli -g 或 yarn global remove vue-cli 或  sudo npm uninstall  vue-cli -g 
+2. 安装vue cli3.0，包名称由vue-cli改为@vue/cli： npm install @vue/cli 或者 yarn global add @vue/cli 
+3. 创建项目：vue create 项目名 --> please pick a present选择Manually select features --> 选中Babel、Router、Vuex、CSS（将Linter/Formatter的选中取消）
+            --> 选择Sass/SCSS --> 选择In dedicated config files
+4. 启动项目试试: yarn serve
+5. build一下试试: yarn run build （会build出一个dist文件夹，此文件夹就是开发完成后部署到服务器上的项目）
+6. 在vue-cli3.0搭建出来的项目中配置代理：在根目录下创建vue.config.js --> module.exports = {devServer: {proxy: {'/api': {target: '', changeOrigin: true}}}}
+
+本地安装（vue-cli可在本地安装，这样当你的项目分享给别人时就不依赖于别人的电脑全局也要安装vue-cli了，只是在本地启用命令即可）：
+1. yarn add @vue/cli
+2. 在package.json文件中添加 "scripts":{"vue": "vue"}
+3. 执行yarn run vue --help 查看命令
+4. 创建项目：yarn run vue create 项目名
+
+
+
+二、知识点：
+1. 项目结构中有一个static文件夹，此文件夹中有一个.gitkeep文件，文件没有内容，这个文件是为了static文件夹做git同步用的。因为空文件夹是无法通过git
+   提交的，所以要有一个文件即使是没有内容的文件就可以将static文件夹做git同步了
+2. vue项目中的.vue文件叫做单文件组件（结构、逻辑和样式都写在此文件中）
+3. <router-link tag="li" :to="{name:'home'}" active-class="active"></router-link>  tag是将此标签经编译后会变成li标签、active-class是添加此标签被选中后的样式类名

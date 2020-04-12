@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="../vue.js"></script>
+</head>
+<body>
+    <div id="root">
+        <first-child :msg="msg"></first-child>
+    </div>
+</body>
+
+<script>
+    //1.对父组件通过props的传值进行约束
+    const FirstChild = {
+        //props: ['msg'],
+        props: {
+            msg: {
+                //type: String, //传来的msg必须是字符串，不是字符串就会报错
+                type: [String, Number],
+                required: true, //必须传，父组件不传msg就会报错
+                //default: 'bbb', //为msg设置默认值，当父组件不传时就用此默认值（设置默认值就不能用required了，这两个是互斥的）
+                validator: function(value){ //对父组件传来的值进行验证，return的是false时会报错
+                    return value == 'aaa' || value == 111;
+                }
+            }
+        },
+        template: '<div>{{msg}}</div>'
+    }
+
+    new Vue({
+        el: '#root',
+        data: {
+            msg: 111
+        },
+        components: {
+            FirstChild
+        }
+    });
+</script>
+</html>
