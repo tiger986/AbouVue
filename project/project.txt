@@ -32,10 +32,10 @@
    提交的，所以要有一个文件即使是没有内容的文件就可以将static文件夹做git同步了
 2. vue项目中的.vue文件叫做单文件组件（结构、逻辑和样式都写在此文件中）
 3. <router-link tag="li" :to="{name:'home'}" active-class="active"></router-link>  tag是将此标签经编译后会变成li标签、active-class是添加此标签被选中后的样式类名
-4. 路由守卫(限制路由跳转)：
+4. 路由守卫：
    a. beforeRouteEnter(to, from, next){ //进入守卫(不能在事件中直接访问this)（写在需要守卫的组件中，与组件的生命周期钩子平级）
        if(login){
-           //next()  //进入页面
+           //next()  //进入页面,不写next()则路由将不会切换
            next((vm) => { //vm当前组件的实例(this)
                console.log(vm)
            })
@@ -43,8 +43,8 @@
            alert('没有登陆，不能进入此页面')
        }
    }
-   b. beforeRouteLeave(to, from, next){} //离开守卫(可在事件中直接访问this)
-   c. beforeRouteUpdate(to, from, next){} //在当前路由改变但该组件被复用时触发(可在事件中直接访问this)
+   b. beforeRouteLeave(to, from, next){next()} //离开守卫(可在事件中直接访问this) （to是将要切换到的那个路由的信息对象，from是切换的前一个路由的信息对象）
+   c. beforeRouteUpdate(to, from, next){next()} //在当前路由改变但该组件被复用时触发，如：detail/1切换到detail/2 (可在事件中直接访问this)
 5. 在组件中获取当前路由：this.$route.path
 6. v-for和v-if用在统一标签内会有优先级的问题(v-for优先)，所以要在外层写一个template标签，把v-if放在template标签上
 7. v-for循环一个数字：v-for="(n, i) of 10", n -> 1,2,3,4,5,6,7,8,9,10; i -> 0,1,2,3,4,5,6,7,8,9
