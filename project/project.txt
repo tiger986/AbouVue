@@ -48,3 +48,9 @@
 5. 在组件中获取当前路由：this.$route.path
 6. v-for和v-if用在统一标签内会有优先级的问题(v-for优先)，所以要在外层写一个template标签，把v-if放在template标签上
 7. v-for循环一个数字：v-for="(n, i) of 10", n -> 1,2,3,4,5,6,7,8,9,10; i -> 0,1,2,3,4,5,6,7,8,9
+8. 绑定回车事件：@keyup.enter=""
+9. 编程式导航：
+   a. this.$router.push('home')  //字符串
+   b. this.$router.push({path: 'home'})  //对象
+   c. this.$router.push({name: 'home', params{id: 2}})  //命名的路由
+   d. this.$router.push({path: 'home', query: {plan: 'private'}})  //带查询参数，变成：/home?plan=private，在跳转后的页面上可以用this.$route.query.plan拿到查询参数
