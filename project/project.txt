@@ -54,3 +54,41 @@
    b. this.$router.push({path: 'home'})  //对象
    c. this.$router.push({name: 'home', params{id: 2}})  //命名的路由
    d. this.$router.push({path: 'home', query: {plan: 'private'}})  //带查询参数，变成：/home?plan=private，在跳转后的页面上可以用this.$route.query.plan拿到查询参数
+10. this.$router.push()跳转后可以回退，上一个路由会被保存在浏览器的历史记录里；this.$router.replace()跳转后不可回退，上一个路由不会被保存在浏览器的历史记录里
+
+
+
+
+三、工具
+1. vue.js devtools (通过chrome市场安装的扩展程序)
+2. yo框架 (需要安装 yarn add yo3) (这是基于react的组件库框架，这里我们只用它的样式部分)
+   a. 安装完成后将根目录下的yo文件夹和package.json里的dependencies下的yo3都删除
+   b. 将node_modules中的yo3文件夹中的style文件夹复制并黏贴到src文件夹中
+   c. 项目的样式重置：在App.vue中的style中引入yo3的样式重置  @import './style/usage/core/reset.scss'; (不要忘了分号，App.vue的style不用写scoped)
+   d. 在页面中使用：在style中引入@import '@/style/usage/core/reset.scss';   然后就可以使用了，如：.box{@include flexbox(); @include flex-direction(column)}
+3. mint-ui组件库(在cli3中使用，cli3以前直接在.babelrc文件中配置)
+   a. yarn add mint-ui
+   b. yarn add babel-plugin-component -D
+   c. 在main.js中引用：import MintUi from 'mint-ui'  import 'mint-ui/lib/style.css'  Vue.use(MintUi)
+   d. 在页面使用(例如使用Button)：<mt-button :plain="true" @click="handleClick">开始体验</mt-button>
+   e. 也可在页面中引入组件import {Swipe, SwipeItem} from 'mint-ui'   然后再注入组件components:{MySwipe: Swipe, MySwipeItem: SwipeItem}  这样就可以在任意组件中使用了
+   注：d方法使用组件时只能使用mint-ui提供的默认的组件名，如：<mt-swipe></mt-swipe>, e方法使用组件时可以在注入的时候自定义组件名，如：<my-swipe></my-swipe>
+
+4. axios 在vue中一般不适用ajax，一般使用axios来请求接口
+   a. yarn add axios
+   b. 在使用的页面引入：import axios from 'axios'
+   d. 使用
+
+5. iconfont的使用(结合yo使用)
+   a. 打开iconfont.cn, 图标库 -> 官方图标库 -> 手机淘宝图标库 -> 寻找或搜索需要的图标 -> 加入购物车
+   b. 选择完要的图标后，在购物车中点击下载代码 -> 下载完后解压 -> 将iconfont.ttf和iconfont.woff复制到assets文件夹下的iconfont里(新建一个iconfont文件夹)
+   c. 打开下载后解压的文件夹，打开demo_index.html，查看iconfont
+   d. 在使用页面的syle中定义font-face: 
+      @font-face {
+        font-family: 'yofont';
+        src: 
+          url('../assets/iconfont/iconfont.woff') format('woff'),
+          url('../assets/iconfont/iconfont.ttf') format('truetype')
+        }
+    e. 给使用iconfont的标签添加class名yo-ico -> 将从demo_index.html查看到的某个图标的iconfont写在标签里
+       <i class="yo-ico">&#xe612;</i>  注意：&#xe612;是html代码，不是文本
