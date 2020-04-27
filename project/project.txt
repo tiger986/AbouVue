@@ -55,7 +55,15 @@
    c. this.$router.push({name: 'home', params{id: 2}})  //命名的路由
    d. this.$router.push({path: 'home', query: {plan: 'private'}})  //带查询参数，变成：/home?plan=private，在跳转后的页面上可以用this.$route.query.plan拿到查询参数
 10. this.$router.push()跳转后可以回退，上一个路由会被保存在浏览器的历史记录里；this.$router.replace()跳转后不可回退，上一个路由不会被保存在浏览器的历史记录里
-
+11. 从远端拉下一个项目后，怎么run起来或继续开发：
+    a. 安装nodejs(如果本机没有安装，若安装了可能还会有版本要求，这时就要升级node)（node -v 查看版本）
+    b. 安装yarn（如果本机没有安装）（yarn -v 查看版本）（若yarn不是内部命令，则需要配环境变量：高级系统设置->环境变量->系统变量->编辑path->添加路径,如：C:\Users\tiger\AppData\Roaming\npm\node_modules\yarn\bin）
+    c. 安装vue-cli（vue -V 查看版本）（若vue不是内部命令，则需要配环境变量：高级系统设置->环境变量->系统变量->编辑path->添加路径,如：C:\Users\tiger\AppData\Local\Yarn\bin）
+    d. 在项目根目录执行yarn install
+    e. 在执行yarn install时如果报错node_modules\node sass:Command failed.则需一次执行：
+       npm install -g mirror-config-china --registry=http://registry.npm.taobao.org
+       npm install node-sass
+       yarn install
 
 
 
