@@ -1,5 +1,5 @@
 <template>
-  <swiper :imgCount="4" :isImgExpand="true" :isButtonShow="true"></swiper>
+  <swiper :imgCount="4" :isImgExpand="true" :isButtonShow="true" :isClick="false"></swiper>
 </template>
 
 <script>

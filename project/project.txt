@@ -11,7 +11,7 @@
    注意：在根组件里注入router后，在任何组件里都可以使用router-view标签和router-link标签
 
 安装（vue-cli3.0）：
-1. 如果您在vue-cli全局安装了以前的(1.x或2.0)软件包，则需要先将其卸载：npm uninstall vue-cli -g 或 yarn global remove vue-cli 或  sudo npm uninstall  vue-cli -g 
+1. 如果您在vue-cli全局安装了以前的(1.x或2.0)软件包，则需要先将其卸载：npm uninstall vue-cli -g 或 yarn global remove vue-cli 或  sudo npm uninstall vue-cli -g 
 2. 安装vue cli3.0，包名称由vue-cli改为@vue/cli： npm install @vue/cli 或者 yarn global add @vue/cli 
 3. 创建项目：vue create 项目名 --> please pick a present选择Manually select features --> 选中Babel、Router、Vuex、CSS（将Linter/Formatter的选中取消）
             --> 选择Sass/SCSS --> 选择In dedicated config files
@@ -64,6 +64,12 @@
        npm install -g mirror-config-china --registry=http://registry.npm.taobao.org
        npm install node-sass
        yarn install
+12. 设计图上的文本字体大小为10px：.text{font-size: 12px; transform: font scale(0.86);},设置12px,再缩小到10px（因为浏览器显示最小字体为12px,所以不能直接写font-size:10px）
+13. .div1{width: max-content;} div1的宽度为其内容的最大宽度
+14. $nextTick 将回调延迟到下次DOM更新循环之后执行，在修改数据之后立即调用它，然后等待DOM更新（$nextTick(function(){do something})）
+15. 动态属性：在data中定义，通过this.属性名访问；静态属性：不在data中定义，直接写this.属性名=值，也是通过this.属性名访问，静态属性不会像动态属性那样呗绑定一些信息数据，它不能用在模板上渲染
+16. 请求接口那会李图片不显示，在index.html中加<meta name="referrer" content="never">
+
 
 
 
@@ -77,16 +83,18 @@
 3. mint-ui组件库(在cli3中使用，cli3以前直接在.babelrc文件中配置)
    a. yarn add mint-ui
    b. yarn add babel-plugin-component -D
-   c. 在main.js中引用：import MintUi from 'mint-ui'  import 'mint-ui/lib/style.css'  Vue.use(MintUi)
-   d. 在页面使用(例如使用Button)：<mt-button :plain="true" @click="handleClick">开始体验</mt-button>
-   e. 也可在页面中引入组件import {Swipe, SwipeItem} from 'mint-ui'   然后再注入组件components:{MySwipe: Swipe, MySwipeItem: SwipeItem}  这样就可以在任意组件中使用了
-   注：d方法使用组件时只能使用mint-ui提供的默认的组件名，如：<mt-swipe></mt-swipe>, e方法使用组件时可以在注入的时候自定义组件名，如：<my-swipe></my-swipe>
-
-4. axios 在vue中一般不适用ajax，一般使用axios来请求接口
+   c. 使用方法：
+      方法1：在babel.config.js中添加配置 "plugins": [["component", {"libraryName": "mint-ui", "style": true}]]，
+            在页面中引入组件import {Swipe, SwipeItem} from 'mint-ui'   然后再注入组件components:{[Swipe.name]: Swipe, [SwipeItem.name]: SwipeItem}  这样就使用了
+      方法2：在main.js中引用：import MintUi from 'mint-ui'  import 'mint-ui/lib/style.css'  Vue.use(MintUi), 
+            在页面使用(例如使用Button)：<mt-button :plain="true" @click="handleClick">开始体验</mt-button>
+   注：最好使用方法1，哪里用就在哪里引入，避免不必要的载入
+      方法1使用组件时只能使用mint-ui提供的默认的组件名，如：<mt-swipe></mt-swipe>, 
+      方法2使用组件时可以在注入的时候自定义组件名，但最好使用mint-ui提供的默认的组件名，因为可能有样式绑定，[Swipe.name]是es6语法，[]是将一个变量的值取到作为字符串，Swipe.name的值就是mint-ui提供的Swipe的默认的组件名(mt-swipe)
+4. axios(在vue中一般用axios来请求接口)  
    a. yarn add axios
    b. 在使用的页面引入：import axios from 'axios'
    d. 使用
-
 5. iconfont的使用(结合yo使用)
    a. 打开iconfont.cn, 图标库 -> 官方图标库 -> 手机淘宝图标库 -> 寻找或搜索需要的图标 -> 加入购物车
    b. 选择完要的图标后，在购物车中点击下载代码 -> 下载完后解压 -> 将iconfont.ttf和iconfont.woff复制到assets文件夹下的iconfont里(新建一个iconfont文件夹)
@@ -100,3 +108,40 @@
         }
     e. 给使用iconfont的标签添加class名yo-ico -> 将从demo_index.html查看到的某个图标的iconfont写在标签里
        <i class="yo-ico">&#xe612;</i>  注意：&#xe612;是html代码，不是文本
+6. better-scroll
+   a. yarn add better-scroll
+   b. 在使用页面引入：import BScroll from 'better-scroll'
+   c. 使用：mounted(){
+            new BScroll('#id', { //id为容器id(class也可以)(容器要加width或height并且加overflow:hidden)，容器要保证只有一个子元素（不是孙元素）（子元素的宽或高要比容器大才能滚动）(如果有相同的id或class那么只会第一个有效)
+                scrollX: true //横向
+            })
+           }
+    d. 在better-scroll的滚动体中，默认是不能绑定事件的，如果要绑定则要在better-scroll初始化的时候改变对应事件的默认值：
+       new BScroll('#id', {
+            scrollX: true,
+            click: true
+        })
+
+
+
+四、vuex
+1. vuex是专为vue.js应用程序开发的状态管理模式(也就是专为vue.js设计的状态管理库)(实现vue组件的状态共享)
+2. 原理： Components --dispatch(手动)--> Actions(backend API) --commit(自动)--> Mutations(devtools) --mutate(手动)--> State --render(自动)-- Components
+3. 用法：
+   a. 在src文件夹中创建store文件夹，在其中创建index.js
+   b. 在index.js中引用vuex: 
+        import Vue from 'vue'
+        import Vuex from 'vuex'
+        Vue.use(Vuex)
+        export default new Vuex.Store({
+            state: {
+            },
+            mutations: {
+            },
+            actions: {
+            },
+            modules: {
+            }
+        })
+    c. 在main.js中引入：import store from './store/index.js'（index.js可以省略不写）
+    d. 在组件中使用...mapState时需要抽离：import {mapState} from 'vuex'

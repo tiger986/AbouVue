@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="../vue.js"></script>
+    <script src="../vuex.js"></script>
+    <title>Document</title>
+</head>
+<body>
+    <div id='root'>
+        <button @click="incrementClick">+</button>
+        {{counter}}
+        <button @click="decrementClick">-</button>
+        <p>
+            <button @click="decrement">-</button>
+        </p>
+        <hello></hello>
+    </div>
+</body>
+<script>
+    const store = new Vuex.Store({ //Vue.Store中的属性可以被所有组件访问this.$store.....
+        state: {
+            count: 0,
+            count2: 1,
+            count3: 2
+        },
+        getters: { //store里的computed
+            newValue(state){
+                return state.count + 20;
+            },
+            // newValue2: function(state){
+            //     return function(num){
+            //         return state.count + num;
+            //     }
+            // }
+            newValue2: state => num => state.count + num, //箭头函数有形参不用写();函数体为return时不用加{}，也不用写return
+            newValue3: state => state.count * 2
+        },
+        mutations: { //添加mutations
+            increment(state, payload){
+                //state.count += payload;
+                state.count += payload.num2;
+            },
+            decrement(state){
+                state.count -= 1;
+            }
+        }
+    });
+
+    const Hello = {
+        data(){
+            return {
+                //
+            }
+        },
+        template: '<div>{{count}} {{count2}} {{count3}} {{newValue3}}</div>',
+        computed: {
+            selComputed(){
+                return 100
+            },
+            newBaseValue(){
+                return this.$store.state.count + 50;
+            },
+            //...Vuex.mapState(['count', 'count2', 'count3']), //展开state(不对其中的属性进行操作)，这样展开后，count、count2、count3就可以直接当做Hello组件的计算属性来使用了
+            ...Vuex.mapState({ //展开state并对其中的属性进行操作,展开并操作后，count、count2、count3可以直接当做Hello组件的计算属性来使用
+                count(){
+                    return this.newBaseValue;
+                },
+                count2(){
+                    return this.$store.getters.newValue;
+                },
+                count3(){
+                    return this.$store.getters.newValue2(30); //可以传参，需要在定义newValue2时嵌套函数并设置形参
+                }
+            }),
+            //...mapState()和mapGetters返回的是一个计算属性，所以要放到computed里
+            ...Vuex.mapGetters(['newValue3']) //展开getters(方法与作用与展开state相同)
+        }
+    };
+
+    const vm = new Vue({
+        el: '#root',
+        store,
+        computed: {
+            counter(){
+                return this.$store.state.count;
+            }
+        },
+        components: {
+            Hello
+        },
+        methods: {
+            incrementClick(){
+                //this.$store.commit('increment', 2); //提交mutation,可以传参(载荷)，需要在定义increment函数时设置形参(此时的载荷就是这里传入的实参)
+                this.$store.commit({ //第二种提交方法
+                    type: 'increment',
+                    num: 2, //num是添加时传入的载荷对象的一个属性(此时的载荷是一个对象)
+                    num2: 20  //可以给载荷传入多个属性
+                });
+            },
+            decrementClick(){ //第一种提交方法
+                this.$store.commit('decrement'); //提交mutation(用commit触发mutations中的一个方法)
+            },
+            //将this.decrement映射为this.$store.commot('decrement')，...mapMutations()返回的是一个函数，所以要放到methods里
+            ...Vuex.mapMutations(['decrement']), //展开mutations(没有载荷)，这样展开后，decrement就可以直接当做该组件的methods中的一个方法来使用了
+        }
+    });
+
+</script>
+</html>

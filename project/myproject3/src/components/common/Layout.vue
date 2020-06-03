@@ -1,6 +1,7 @@
 <template>
   <div class="layout_con">
-    <div>
+    <my-header :isShowBack="false"></my-header>
+    <div class="layout_con_box">
       <router-view />
     </div>
     <mt-tabbar v-model="selected">
@@ -13,6 +14,8 @@
 </template>
 
 <script>
+import {Tabbar, TabItem} from 'mint-ui'
+import MyHeader from './MyHeader.vue'
 export default {
   name: 'Layout',
   data(){
@@ -40,6 +43,11 @@ export default {
       ]
     }
   },
+  components:{
+    [Tabbar.name]: Tabbar,
+    [TabItem.name]: TabItem,
+    MyHeader
+  },
   methods: {
     tabClick(path){
       this.$router.push({path: path});
@@ -62,9 +70,10 @@ export default {
     height: 100%;
     @include flexbox();
     @include flex-direction(column);
-    >div:first-child{
+    .layout_con_box{
       @include flex();
       width: 100%;
+      overflow: hidden;
     }
     >div:last-child{
       position: static;

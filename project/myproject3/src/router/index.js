@@ -5,6 +5,8 @@ import Index from '../views/Index.vue'
 import Board from '../components/board/Board.vue'
 import Search from '../components/search/Search.vue'
 import My from '../components/my/My.vue'
+import Lists from '../views/Lists.vue'
+import Detail from '../views/Detail.vue'
 
 Vue.use(VueRouter)
 
@@ -40,6 +42,16 @@ Vue.use(VueRouter)
         component: My
       }
     ]
+  },
+  {
+    path: '/lists',
+    name: 'lists',
+    component: Lists
+  },
+  {
+    path: '/detail',
+    name: 'detail',
+    component: Detail
   }
 ]
 
