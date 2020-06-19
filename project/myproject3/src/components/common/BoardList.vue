@@ -1,13 +1,13 @@
 <template>
     <div class="list_con">
-        <div v-if="!isLoading">
+        <div v-show="!isLoading">
             <h3 @click="toLists">
-                <span>{{title}}</span>
+                <span>{{boardList.title}}</span>
                 <span class="yo-ico">&#xf07f;</span>
             </h3>
             <div :id="`list_scroll-${scrollId}`">
                 <div>
-                    <figure v-for="(v, i) of BoardList" :key="v.id" @click="toDetail(v.id)">
+                    <figure v-for="(v, i) of boardList.subjects" :key="v.id" @click="toDetail(v.id)">
                         <img :src="v.images.large" width="90" height="125" />
                         <figcaption>{{v.title}}</figcaption>
                     </figure>
@@ -24,6 +24,7 @@
     import BScroll from 'better-scroll'
     import {Spinner} from 'mint-ui'
     import $ from 'axios'
+    import {mapState} from 'vuex'
     export default {
         name: 'BoardList',
         props: {
@@ -34,8 +35,8 @@
         },
         data(){
             return {
-                BoardList: [],
-                title: '',
+                //boardList: [],
+                //title: '',
                 scrollId: '',
                 isLoading: true
             }
@@ -65,20 +66,14 @@
                 });
             }
         },
-        mounted(){
-            $.get('/v2/movie/' + this.movieType)
-                .then((result) => {
-                    //console.log(result);
-                    this.BoardList = result.data.subjects;
-                    this.title = result.data.title;
-                    this.isLoading = false;
-                })
-                .catch((e) => {
-                    //
-                })
-        },
-        watch: {
-            isLoading(newval){
+        computed:{
+            ...mapState(['movieList']),
+            boardList(){
+                //let res = this.$store.state.movieList[this.movieType]
+                let ml = this.movieList[this.movieType];
+                let res = Object.keys(ml).length > 0 ? ml : {};
+                //console.log(res)
+                this.isLoading = res.subjects ? false : true;
                 this.genRandom();
                 //$nextTick(将回调延迟到下次DOM更新循环之后执行，在修改数据之后立即调用它，然后等待DOM更新)
                 this.$nextTick(function(){
@@ -87,7 +82,36 @@
                         click: true
                     });
                 });
+                return res;
             }
+        },
+        mounted(){
+            // $.get('/v2/movie/' + this.movieType)
+            //     .then((result) => {
+            //         //console.log(result);
+            //         this.BoardList = result.data.subjects;
+            //         this.title = result.data.title;
+            //         this.isLoading = false;
+            //     })
+            //     .catch((e) => {
+            //         //
+            //     })
+
+            // let res = this.$store.state.movieList[this.movieType]; //刷新后会没有数据，正确的做法写在计算属性里
+            // this.BoardList = res.subjects;
+            // this.title = res.title;
+        },
+        watch: {
+            // isLoading(newval){
+            //     this.genRandom();
+            //     //$nextTick(将回调延迟到下次DOM更新循环之后执行，在修改数据之后立即调用它，然后等待DOM更新)
+            //     this.$nextTick(function(){
+            //         new BScroll('#list_scroll-' + this.scrollId, {
+            //             scrollX: true,
+            //             click: true
+            //         });
+            //     });
+            // }
         }
     }
 </script>

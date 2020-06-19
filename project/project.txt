@@ -69,7 +69,35 @@
 14. $nextTick 将回调延迟到下次DOM更新循环之后执行，在修改数据之后立即调用它，然后等待DOM更新（$nextTick(function(){do something})）
 15. 动态属性：在data中定义，通过this.属性名访问；静态属性：不在data中定义，直接写this.属性名=值，也是通过this.属性名访问，静态属性不会像动态属性那样呗绑定一些信息数据，它不能用在模板上渲染
 16. 请求接口那会李图片不显示，在index.html中加<meta name="referrer" content="never">
-
+17. promise.all的使用：
+    const in_theaters = $.get('/v2/movie/in_theaters')
+        .then((res) => {
+          return res;
+        })
+      const coming_soon = $.get('/v2/movie/coming_soon')
+        .then((res) => {
+          return res;
+        })
+      const top250 = $.get('/v2/movie/top250')
+        .then((res) => {
+          return res;
+        })
+      Promise.all([in_theaters, coming_soon, top250]) 
+      //上面的$.get返回的是一个promise(ajax也是)，所以可以这样用，用Promise.all()同时并行上面的3个函数，等上面的3个请求都拿到结果后再做下一步操作
+        .then((res) => { //res是一个对应上面3个请求拿回来的结果所组成的一个数组
+          //console.log(res);
+          context.commit(mutationTypes.GETDATA, {
+            in_theaters: res[0].data,
+            coming_soon: res[1].data,
+            top250: res[2].data
+          });
+        })
+18. computed中定义的计算属性函数触发需要两个条件：a. 依赖的数据发生改变 b. 此计算属性在模板中被使用  注意：当模板中使用此计算属性的代码被v-if包裹时要注意，
+    v-if为false时，其所包裹的代码不会被挂载，这样的代码中使用计算属性则是无效的，所以就不能触发computed中对应的计算属性函数，所以这种情况要讲v-if改为v-
+19. vue中Dom操作：a.获取：this.scrollTop = document.querySelector('.mint-loadmore').scrollTop  b.修改：document.querySelector('.mint-loadmore').scrollTop = this.scrollTop
+20. v-for中key的作用：key给节点添加了唯一标识，主要作用就是提高渲染性能，避免数据混乱。
+    比如：页面上的标签都对应具体的虚拟dom对象(虚拟dom就是js对象), 循环中 ,如果没有唯一key , 页面上删除一条标签, 由于并不知道删除的是那一条! 所以要吧全部虚拟dom重新渲染, 如果知道key为x标签被删除掉, 只需要把渲染的dom为x的标签去掉即可! 
+    使用v-for更新已渲染的元素列表时,默认用就地复用策略;列表数据修改的时候,他会根据key值去判断某个值是否修改,如果修改,则重新渲染这一项,否则复用之前的元素;
 
 
 
@@ -135,13 +163,191 @@
         Vue.use(Vuex)
         export default new Vuex.Store({
             state: {
+                title: '',
+                name: ''
+            },
+            getters: { //store里的computed,使用getters的前提是要有多个组件都要使用通过此算法返回的值
+                newTitle(state, getters){
+                    return state.title = '我的';
+                    //return getters.newName('我的')
+                },
+                newName(state, getters){
+                    return function(str){
+                        return state.name = str;
+                    }
+                }
             },
             mutations: {
+                changeTitle(state, payload){
+                    state.title = payload;
+                    //state.title = payload.text1;
+                }
             },
             actions: {
+                changeTitle(context, payload){  //context就是当前的上下文，就是store的上下文
+                    setTimeout(function(){
+                        context.commit('changeTitle', payload);
+                        //context.commit('changeTitle', payload.text1);
+                    }, 1000); 
+                }
             },
-            modules: {
+            modules: { //模块
+                mod1: {
+                    state: {
+                        text: ''
+                    },
+                    getters: {
+
+                    },
+                    mutations: {
+                        setText(state, payload){
+                            state.text = str;
+                        }
+                    },
+                    actions: {
+                        set(context, payload){
+                            context.commit('setText', payload);
+                        }
+                    }
+                },
+                mod2: {
+                    state: {
+                        text2: ''
+                    },
+                    getters: {
+
+                    },
+                    mutations: {
+                        setText2(state, payload){
+                            state.text2 = str;
+                        }
+                    },
+                    actions: {
+                        set(context, payload){
+                            context.commit('setText2', payload);
+                        }
+                    }
+                }
             }
         })
-    c. 在main.js中引入：import store from './store/index.js'（index.js可以省略不写）
-    d. 在组件中使用...mapState时需要抽离：import {mapState} from 'vuex'
+    c. 在main.js中引入：import store from './store/index.js'（index.js可以省略不写），并在new Vue的时候注入
+    d. 在组件中使用state:
+       方法1：this.$store.state.title
+       方法2：import {mapState} from 'vuex'   在computed中...mapState(['title', 'name'])  (此时title就可以当做当前组件的计算属性使用)(不对state进行操作)
+       方法3：import {mapState} from 'vuex'   在computed中...mapState({
+                                                                        title(){
+                                                                            return '首页'
+                                                                        },
+                                                                        name(){
+                                                                            return 'ddd'
+                                                                        }
+                                                                     })  (此时title就可以当做当前组件的计算属性使用)(对state进行操作)
+    e. 在组件中使用mutations：
+       方法1：this.$store.commit('changeTitle', '关于'); (mutations要在组件中用commit触发，state中的数据最好通过mutations来操作)
+       方法2：this.$store.commit({
+                                    type: 'changeTitle',
+                                    text1: '关于',
+                                    text2: '我的'
+                                }) （此时的payload是一个对象，这样就需要在定义changeTitle的时候写changeTitle(state, payload){state.title = payload.text1;})
+       方法3：import {mapMutations} from 'vuex'   在methods中...mapMutations(['changeTitle'])  再在合适的地方调用this.changeTitle('关于')  （此时changeTitle就可以当做当前组件的一个事件来使用）
+       注意：为了方便维护，一般mutations中的事件名称要做一个处理: 在store文件夹中建一个mutations-types.js文件 ---->
+                                                          在mutations-types.js中定义名称并暴露 export const CHANGETITLE = 'changeTitle' ---->
+                                                          在store/index.js中引入并使用 import {CHANGETITLE} from './mutations-types.js'  mutations: {
+                                                                                                                                          [CHANGETITLE](state, payload){
+                                                                                                                                             state.title = payload;
+                                                                                                                                          }
+                                                                                                                                       }
+                                                          在store/index.js中也可以这样引入并使用 import * as mutationTypes from './mutations-types.js'  mutations: {
+                                                                                                                                          [mutationTypes.CHANGETITLE](state, payload){
+                                                                                                                                             state.title = payload;
+                                                                                                                                          }
+                                                                                                                                       }
+                                                          在方法1也要这样引入，再改写成this.$store.commit(CHANGETITLE, '关于'); 
+                                                          在方法3中也要这样先引入，再将...mapMutations(['changeTitle'])写成...mapMutations([CHANGETITLE]),再在合适的地方调用this[CHANGETITLE]('关于')
+
+    f. actions是用来提交mutations的，mutations再修改state,actions并不直接修改state,即actions-->mutations-->state,为什么mutations要通过actions来提交呢？
+       因为当mtations中操作的数据(如payload或state中的数据)是异步得来的，这时mutations就很可能在这个数据得到之前就已经完成触发了，那么就是无效的了，
+       所以要用actions来提交，actions可以处理异步解决这样的问题，简单的说就是在mutations中不能做异步操作，在actions中可以（有没有异步操作都可以通过actions来提交mutations）
+       总结：在做项目的时候即使没有异步操作，最好也通过actions来提交mutations(在actions中commit mutations),为了方便后期维护修改。
+    g. 在组件中使用actions（用dispatch触发）:
+       方法1：this.$store.dispatch('changeTitle', '关于');
+       方法2：与mutations的方法2相同
+       方法3：与mutations的方法3相同
+       注意：与e中的注意相同
+    h. 在组件中使用getters:
+       方法1：this.$store.getters.newTitle,   this.$store.getters.newName('首页')
+       方法2：与state的方法2相同
+    i:在组件中使用modules：
+      state: this.$store.state.mod1.text  (注意state和mod1的位置)
+      actions: (1) this.$store.dispatch('mod1/set') (dispatch时要在action的函数名前加上模块名)
+               (2) methods:{
+                    ...mapActions('mod1', ['set'])
+                   }
+       
+
+
+
+五、git相关
+1. git 报错fatal: unable to access 'https://github.com/tiger986/AbouVue/': LibreSSL SSL_connect: SSL_ERROR_SYSCALL in connection to github.com:443 
+   解决办法：输入命令 git config --global http.sslVerify false  执行后再clone或push
+
+2. git图：
+   Workspace(开发目录) --add--> Index(索引库) --commit--> Repository(本地仓库) --push--> Remote(远端仓库)
+    | |--<-----<-----<-----checkout-----<-----<-----<-----|  |                         |  |
+    |                                                        |---<---fetch/clone---<---|  |
+    |                                                                                     |   
+    |--<--------<-------<--------<-------pull------<--------<---------<-------<-----------|
+
+3. git命令：
+   a. git init
+      初始化，执行后目录中会自动创建一个.git文件夹
+   b. git remote add origin 项目远端仓库地址
+      将本地仓库与远端仓库建立关联，执行后会在.git/config文件中自动添加上关联代码：
+      [remote "origin"]
+      url = 项目远端仓库地址
+      fetch = +refs/heads/*:refs/remotes/origin/*
+      注：不执行上面的命令，手动在.git/config文件中添加关联代码也可以建立关联
+   c. git clone 项目远端仓库地址
+      将远端仓库克隆到本地，执行后会自动建立关联
+   d. git add tt.html / git add .
+      向索引库添加tt.html文件 / 向索引库添加所有文件
+   e. git commit -m '信息文字'
+      向本地仓库提交
+   f. git push 
+      向远端仓库提交
+   g. git push --set-upstream origin master
+      在本地添加master分支的映射并向远端提交，执行后会在.git/config文件中自动添加上映射代码：
+      [branch "master"]
+      remote = origin
+      merge = refs/heads/master
+      注：不执行上面的命令，手动在.git/config文件中添加映射代码也可以，有了映射后在master分支上执行git push就可以提交了，
+         如果一个分支没有映射，在此分支上执行git push时会失败并提醒要做映射
+    h. git branch / git branch -a
+       查看本地的所有分支 / 查看本地和远端的所有分支
+    i. git status
+       查看状态
+    j. git config --global alias.br branch
+       给命令添加别名，执行后，以后git branch 就可以写成git br,可以将名字较长的命令都起一个别名代替
+    k. git checkout 分支名 git checkout -b 分支名
+       切换分支 / 创建分支并切换，创建分支时要注意是从当前分支上创建一个新的分支
+    l. git merge 分支名
+       将当前分支和另一个分支进行merge(修改的是当前分支)，注意merge后并不会修改到远端（只会自动进行commit），如果要修改远端则要执行git push，提交到远端
+       注：merge后修改的是当前分支，即将当前分支与merge的分支同步，不会对merge的分支修改
+    m. git pull
+       从远端拉取最新代码到本地开发目录
+    n. git fetch / git fetch -a
+       从远端fetch新东西到本地，尤其是新分支，如果有新分支，那么git branch -a 后就能看到，如果需要切换到新分支就git checkout 分支名
+    o. git log
+       查看git日志，如提交过的版本号等
+    p. git reset HEAD / git reset HEAD^ / git reset 版本号
+       回退到当前版本(用在还没有commit,还没有生成版本号) / 回退到上一版本(用在已经commit了，有的新的版本号了) / 回退到该版本号上(用在已经commit了，有的新的版本号了)
+       注：git reset HEAD只对暂存区起效果，不对工作区的内容起效果。所以我们要想修改掉工作区的内容还得继续执行命令进行还原（git checkout 要还原的文件名），
+           但git reset --head HEAD 会直接把工作区的内容也修改了，不加--hard的时候只是操作了暂存区，不影响工作区的，--hard一步到位，不加--hard需要分开执行，两步操作。
+           看上去加了--hard方便好多，但是我不建议大家使用这个，因为这个杀伤力有点强。（加了--hard的，有没有commit的是没有区分的）
+
+4. git工作流程（主干发布，分支开发）：
+   a. 切换到master分支，git pull
+   b. 切换到自己的开发分支，如果master有更新，则git merge master（将master merge到自己的开发分支）
+   c. 在自己的开发分支上修改后，git commit -am '修改信息',然后git push
+   d. 测试人员git checkout到已经提交的开发人员的分支上(如果没有开发人员的分支就git fetch -a，然后git branch查看有没有fetch下来，然后再it checkout)，
+      然后git pull，然后对其开发进行测试，如果测试通过就git checkout到master分支git merge 已经提交的开发人员的分支,最后git push进行发布

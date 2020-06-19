@@ -38,6 +38,7 @@
     import $ from 'axios'
     import {Indicator} from 'mint-ui'
     import {mapMutations} from 'vuex'
+    import {CHANGEHEADERTITLE} from '../../store/mutation-types.js'
     export default {
         name: 'MovieDetail',
         data(){
@@ -48,16 +49,35 @@
             }
         },
         methods: {
-            ...mapMutations(['changeHeaderTitle'])
+            //...mapMutations([''changeHeaderTitle])
+            ...mapMutations([CHANGEHEADERTITLE])
         },
         components: {
             MyHeader
         },
-        mounted(){
+        // mounted(){
+        //     Indicator.open();
+        //     $.get('/v2/movie/subject/' + this.$route.query.id + '?apikey=0df993c66c0c636e29ecbb5344252a4a')
+        //         .then((res) => {
+        //             this[CHANGEHEADERTITLE](res.data.title);
+        //             this.detailData = res.data;
+        //             this.bgUrl = 'url(' + res.data.images.large + ')';
+        //             this.isShowInfo = true;
+        //             this.$nextTick(() => { //因为this.isShowInfo=true后v-if="isShowInfo"的DOM才开始渲染,要等其渲染完成
+        //                 new BScroll('.movieDetail_con_box', {
+        //                     scrollY: true
+        //                 });
+        //             });
+        //             Indicator.close();
+        //         })
+        // },
+
+        //当(只有)组件在 <keep-alive> 内被切换，它的 activated 和 deactivated 这两个生命周期钩子函数将会被对应执行。
+        activated(){ //切换进来时触发(进来后再刷新也会再触发)
             Indicator.open();
-            $.get('/v2/movie/subject/' + this.$route.query.id)
+            $.get('/v2/movie/subject/' + this.$route.query.id + '?apikey=0df993c66c0c636e29ecbb5344252a4a')
                 .then((res) => {
-                    this.changeHeaderTitle(res.data.title);
+                    this[CHANGEHEADERTITLE](res.data.title);
                     this.detailData = res.data;
                     this.bgUrl = 'url(' + res.data.images.large + ')';
                     this.isShowInfo = true;
@@ -68,7 +88,12 @@
                     });
                     Indicator.close();
                 })
-        }
+        },
+        deactivated(){ //切换离开时触发
+            this.isShowInfo = false;
+            this.bgUrl = 'url()';
+            this[CHANGEHEADERTITLE]('');
+        },
     }
 </script>
 

@@ -1,6 +1,6 @@
 <template>
     <div class="swiper_con">
-        <mt-swipe :auto="isAuto" :continuous="isContinuous" v-if="!isLoading">
+        <mt-swipe :auto="isAuto" :continuous="isContinuous" v-show="!isLoading">
             <mt-swipe-item v-for="(v, i) of items" :key='v.id' @click.native="toDetail(v.id)">
                 <img :src="v.images.large" :class="{imgHeight: isImgExpand}">
                 <mt-button :plain="true" v-if="isButtonShow && (i == items.length - 1)" @click="gotoIndex">开始体验</mt-button>
@@ -15,6 +15,7 @@
 <script>
 import {Swipe, SwipeItem, Button, Spinner} from 'mint-ui'
 import $ from 'axios'
+import {mapState} from 'vuex'
 export default {
     name: 'Swiper',
     props: {
@@ -45,7 +46,7 @@ export default {
     },
     data(){
         return {
-            items: [],
+            //items: [],
             isLoading: true
         }
     },
@@ -77,15 +78,27 @@ export default {
         }
     },
     mounted(){
-        $.get('/v2/movie/in_theaters?count=' + this.imgCount)
-            .then((result) => {
-                //console.log(result);
-                this.items = result.data.subjects;
-                this.isLoading = false;
-            })
-            .catch((e) => {
-                //
-            })
+        // $.get('/v2/movie/in_theaters?count=' + this.imgCount)
+        //     .then((result) => {
+        //         //console.log(result);
+        //         this.items = result.data.subjects;
+        //         this.isLoading = false;
+        //     })
+        //     .catch((e) => {
+        //         //
+        //     })
+
+        //let res = this.$store.state.movieList.in_theaters;
+        //this.items = res.subjects.slice(0, this.imgCount); //会报错，第一次加载时数据还没有返回来，执行slice会报错，正确的做法写在计算属性里
+    },
+    computed:{
+        ...mapState(['movieList']),
+        items(){
+            let sub = this.movieList.in_theaters.subjects;
+            //console.log(sub);
+            this.isLoading = sub ? false : true;
+            return sub ? sub.slice(0, this.imgCount) : [];
+        }
     }
 }
 </script>

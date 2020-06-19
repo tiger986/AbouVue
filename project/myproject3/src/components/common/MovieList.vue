@@ -28,16 +28,20 @@
     import $ from 'axios'
     import MyHeader from './MyHeader.vue'
     import {mapMutations} from 'vuex'
+    import {CHANGEHEADERTITLE} from '../../store/mutation-types.js'
     export default {
         name: 'MovieList',
         data(){
             return {
-                movieList: [],
+                newMovieList: [],
+                newMovieList2: [],
+                start: 21,
                 allLoaded: false,
                 startHeight: {
                     'min-height': window.innerHeight + 'px'
                 },
-                isGet: true
+                isGet: true,
+                title: ''
             }
         },
         components: {
@@ -51,10 +55,11 @@
                     return false;
                 }
                 this.isGet = false;
-                $.get('/v2/movie/' + this.movieType + '?start=' + (this.movieList.length + 1) + '&count=2')
+                $.get('/v2/movie/' + this.movieType + '?apikey=0df993c66c0c636e29ecbb5344252a4a&start=' + this.start + '&count=2')
                     .then((result) => {
-                        this.movieList.unshift(...result.data.subjects); //将数组展开后再将其元素一个个插入到movieList中，和循环插入的结果一样
+                        this.newMovieList.unshift(...result.data.subjects); //将数组展开后再将其元素一个个插入到movieList中，和循环插入的结果一样
                         this.$refs.loadmore.onTopLoaded(); //加载完成后将加载中字样隐藏
+                        this.start += 2;
                         this.isGet = true;
                     })
             },
@@ -63,14 +68,18 @@
                     return false;
                 }
                 this.isGet = false;
-                $.get('/v2/movie/' + this.movieType + '?start=' + (this.movieList.length + 1) + '&count=2')
+                $.get('/v2/movie/' + this.movieType + '?apikey=0df993c66c0c636e29ecbb5344252a4a&start=' + this.start + '&count=2')
                     .then((result) => {
-                        this.movieList.push(...result.data.subjects); //将数组展开后再将其元素一个个插入到movieList中，和循环插入的结果一样
+                        this.newMovieList2.push(...result.data.subjects); //将数组展开后再将其元素一个个插入到movieList中，和循环插入的结果一样
                         this.$refs.loadmore.onBottomLoaded(); //加载完成后将加载中字样隐藏
+                        this.start += 2;
                         this.isGet = true;
                     })
             },
             toDetail(movieId){
+                let scrollTop = document.querySelector('.mint-loadmore').scrollTop;
+                this.scrollTop = scrollTop;
+
                 this.$router.push({
                     name: 'detail',
                     query: {
@@ -78,22 +87,53 @@
                     }
                 });
             },
-            ...mapMutations(['changeHeaderTitle'])
+            ...mapMutations([CHANGEHEADERTITLE])
+        },
+        computed:{
+            movieList(){
+                let data = this.$store.state.movieList[this.movieType];
+                let res = Object.keys(data).length > 0 ? data.subjects : [];
+                if(res.length > 0){
+                    Indicator.close();
+                }else{
+                    Indicator.open();
+                }
+                this.title = data.title;
+                this[CHANGEHEADERTITLE](data.title);
+                return [...this.newMovieList, ...res, ...this.newMovieList2];
+            }
+        },
+        created(){
+            this.movieType = this.$route.query.uri;
         },
         mounted(){
-            Indicator.open();
-            this.movieType = this.$route.query.uri;
-            $.get('/v2/movie/' + this.movieType)
-                .then((result) => {
-                    //console.log(result);
-                    this.changeHeaderTitle(result.data.title);
-                    this.movieList = result.data.subjects;
-                    Indicator.close();
-                })
-                .catch((e) => {
-                    //
-                })
-        }
+            // Indicator.open();
+            // this.movieType = this.$route.query.uri;
+            // $.get('/v2/movie/' + this.movieType)
+            //     .then((result) => {
+            //         //console.log(result);
+            //         this.changeHeaderTitle(result.data.title);
+            //         this.movieList = result.data.subjects;
+            //         Indicator.close();
+            //     })
+            //     .catch((e) => {
+            //         //
+            //     })
+
+            // this.movieType = this.$route.query.uri;
+            // let result = this.$store.state.movieList[this.movieType]
+            // this.changeHeaderTitle(result.title);
+            // this.movieList = result.subjects;
+        },
+        //当(只有)组件在 <keep-alive> 内被切换，它的 activated 和 deactivated 这两个生命周期钩子函数将会被对应执行。
+        activated(){ //切换进来时触发(进来后再刷新也会再触发)
+            this[CHANGEHEADERTITLE](this.title);
+            //console.log(this.scrollTop)
+            document.querySelector('.mint-loadmore').scrollTop = this.scrollTop || 0;
+        },
+        deactivated(){ //切换离开时触发
+            this[CHANGEHEADERTITLE]('');
+        },
     }
 </script>
 

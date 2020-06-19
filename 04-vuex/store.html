@@ -11,8 +11,10 @@
 <body>
     <div id='root'>
         <button @click="incrementClick">+</button>
+        <button @click="chenClick">x</button>
         {{counter}}
         <button @click="decrementClick">-</button>
+        <button @click="chuClick">/</button>
         <p>
             <button @click="decrement">-</button>
         </p>
@@ -45,8 +47,30 @@
             },
             decrement(state){
                 state.count -= 1;
+            },
+            chen(state, payload){
+                state.count *= payload;
+            },
+            chu(state){
+                state.count /= 2;
+            }
+        },
+        actions: { //actions-->mutations-->state,actions可以帮助mutations处理异步问题,在组件中actions用this.$store.dispatch('chen', 3)来触发
+            chen(context, payload){ //context就是当前的上下文，就是store
+                setTimeout(function(){
+                    context.commit('chen', payload);
+                    //context.commit('chen', payload.num);
+                }, 1000);  
+            },
+            chu(context){
+                setTimeout(function(){
+                    context.commit('chu');
+                }, 1000); 
             }
         }
+        //当mtations中操作的数据(如payload或state中的数据)是异步得来的，这时mutations就很可能在这个数据得到之前就已经完成触发了，那么就是无效的了，
+        //所以要用actions来提交，actions可以处理异步解决这样的问题,简单的说就是在mutations中不能做异步操作，在actions中可以
+        //在做项目的时候即使没有异步操作，最好也通过actions来提交mutations,为了方便后期维护修改
     });
 
     const Hello = {
@@ -76,7 +100,7 @@
                 }
             }),
             //...mapState()和mapGetters返回的是一个计算属性，所以要放到computed里
-            ...Vuex.mapGetters(['newValue3']) //展开getters(方法与作用与展开state相同)
+            ...Vuex.mapGetters(['newValue3']) //展开getters(方法与作用与展开state相同)  使用getters的前提是要有多个组件都要使用通过此算法返回的值
         }
     };
 
@@ -105,6 +129,17 @@
             },
             //将this.decrement映射为this.$store.commot('decrement')，...mapMutations()返回的是一个函数，所以要放到methods里
             ...Vuex.mapMutations(['decrement']), //展开mutations(没有载荷)，这样展开后，decrement就可以直接当做该组件的methods中的一个方法来使用了
+            chenClick(){
+                this.$store.dispatch('chen', 3);
+                //也可以像commit提交mutations那样，用第二种方法：
+                // this.$store.dispatch({
+                //     type: 'chen',
+                //     num: 3
+                // });
+            },
+            chuClick(){
+                this.$store.dispatch('chu');
+            }
         }
     });
 

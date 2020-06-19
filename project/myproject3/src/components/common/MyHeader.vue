@@ -10,6 +10,7 @@
 
 <script>
     import {mapState, mapMutations} from 'vuex'
+    import {CHANGEHEADERTITLE} from '../../store/mutation-types.js'
     export default {
         name: 'MyHeader',
         props: {
@@ -19,7 +20,8 @@
             }
         },
         methods:{
-            ...mapMutations(['changeHeaderTitle']),
+            //...mapMutations(['changeHeaderTitle']),
+            ...mapMutations([CHANGEHEADERTITLE]),
             goBack(){
                 this.$router.back();
             }

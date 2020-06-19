@@ -14,6 +14,7 @@
     import List from './List.vue'
     import BScroll from 'better-scroll'
     import {mapMutations} from 'vuex'
+    import {CHANGEHEADERTITLE} from '../../store/mutation-types.js'
     export default {
         name: 'Board',
         components: {
@@ -26,20 +27,22 @@
             }
         },
         methods: {
-            ...mapMutations(['changeHeaderTitle']) //...mapMutations()返回的是一个函数，所以要放到methods里
+            //...mapMutations(['changeHeaderTitle']) //...mapMutations()返回的是一个函数，所以要放到methods里
+            ...mapMutations([CHANGEHEADERTITLE])
         },
         beforeCreate() {
             //this.$store.commit('changeHeaderTitle', '榜单'); 
             //也可以在methods中用...mapMutations将$store中mutations中的changeHeaderTitle绑到this上，然后再调用
         },
         created() {
-            this.changeHeaderTitle('榜单'); //放到前一个钩子里会报错，调用不了this.changeHeaderTitle
+            //this[CHANGEHEADERTITLE]('榜单'); //放到前一个钩子里会报错，调用不了this.changeHeaderTitle
         },
         mounted(){
             new BScroll('#board_scroll', {
                 scrollY: true,
                 click: true
             });
+            this[CHANGEHEADERTITLE]('榜单');
         }
     }
 </script>
